@@ -1,14 +1,21 @@
 {
     "name": "sofiz/sofizpay-sdk-php",
-    "description": "PHP SDK for SofizPay using Stellar network",
+    "description": "PHP SDK for SofizPay - DZT token operations on Stellar network",
+    "keywords": ["sofizpay", "dzt", "stellar", "blockchain", "cryptocurrency", "sdk", "php"],
+    "homepage": "https://github.com/sofiz/sofizpay-sdk-php",
     "type": "library",
     "license": "MIT",
     "authors": [
         {
             "name": "Sofiz",
-            "email": "contact@sofiz.com"
+            "email": "ceo@sofizpay.com",
+            "homepage": "https://sofizpay.com"
         }
     ],
+    "support": {
+        "issues": "https://github.com/sofiz/sofizpay-sdk-php/issues",
+        "source": "https://github.com/sofiz/sofizpay-sdk-php"
+    },
     "require": {
         "php": ">=8.0",
         "soneso/stellar-php-sdk": "^1.8",
