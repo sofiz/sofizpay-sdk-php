@@ -39,7 +39,8 @@ echo "╚═══════════════════════�
 // Initialize SofizPay client
 // Network options: 'mainnet' (default) or 'testnet'
 $network = 'mainnet'; // Change to 'testnet' for testing
-$client = new SofizPayClient($network);
+$baseUrl = 'https://www.sofizpay.com'; // Change to your API base URL if different
+$client = new SofizPayClient($network, null, $baseUrl);
 
 echo "🚀 SDK Initialized Successfully!\n";
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";

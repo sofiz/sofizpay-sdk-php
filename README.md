@@ -1,13 +1,54 @@
 # SofizPay PHP SDK
 
-A comprehensive PHP SDK for SofizPay that provides seamless integration with the Stellar network for DZT (Dzuut) token operations. Built on the reliable Soneso Stellar SDK, this SDK offers a simple yet powerful interface for managing DZT transactions, account balances, and payment history.
+A comprehensive PHP # Initialize the client (defaults to mainnet)
+$client = new SofizPayClient();
+
+// Check DZT balance
+$balance = $client->getDztBalance('GA_YOUR_ACCOUNT_ID_HERE');
+if ($balance) {
+    echo "DZT Balance: " . $balance->getBalance() . " DZT\n";
+}
+
+// Send DZT payment
+$transactionHash = $client->sendPayment(
+    'SA_YOUR_SECRET_KEY_HERE',          // Source account secret key
+    'GA_DESTINATION_ACCOUNT_ID_HERE',   // Destination account ID
+    '100.50',                           // Amount in DZT
+    'Payment memo'                      // Optional memo
+);
+
+echo "Payment successful! Hash: {$transactionHash}\n";
+
+// Create CIB payment transaction
+$cibTransaction = $client->createCibTransaction(
+    account: 'GA_YOUR_ACCOUNT_ID_HERE',
+    amount: '150.00',
+    fullName: 'Ahmed Ben Ali',
+    phone: '+213555123456',
+    email: 'ahmed@example.com',
+    returnUrl: 'https://yoursite.com/callback'
+);
+
+echo "CIB Payment URL: " . $cibTransaction->getPaymentUrl() . "\n";
+
+// Verify payment callback signature
+$verification = $client->verifyCibSignature($callbackUrl, $publicKeyPem);
+if ($verification->isValid() && $verification->isSuccessful()) {
+    echo "Payment verified successfully!\n";
+} else {
+    echo "Payment verification failed!\n";
+}
+
+echo "This SDK provides seamless integration with the Stellar network for DZT token operations. Built on the reliable Soneso Stellar SDK, this SDK offers a simple yet powerful interface for managing DZT transactions, account balances, and payment history.
 
 ## 🚀 Features
 
 - ✅ **DZT Payment Operations**: Send DZT tokens with optional memos
+- ✅ **CIB Payment Integration**: Create CIB transactions and verify payment callbacks
 - ✅ **Account Management**: Check balances, verify trustlines, and account existence
 - ✅ **Payment History**: Retrieve transaction history with pagination
 - ✅ **Memo Search**: Find transactions by memo text
+- ✅ **Signature Verification**: Verify payment callback signatures with RSA
 - ✅ **Multi-Network Support**: Mainnet (default) and testnet compatibility
 - ✅ **Error Handling**: Comprehensive exception system
 - ✅ **Service Architecture**: Modular design for maintainability
@@ -56,7 +97,7 @@ $transactionHash = $client->sendPayment(
 echo "Payment successful! Hash: {$transactionHash}\n";
 ```
 
-## 📖 Complete Example
+## 📖 Complete Examples
 
 Run the comprehensive example that demonstrates all SDK features:
 
@@ -64,10 +105,17 @@ Run the comprehensive example that demonstrates all SDK features:
 php example.php
 ```
 
-This example showcases:
+For CIB payment integration specifically:
+
+```bash
+php cib_example.php
+```
+
+These examples showcase:
 - SDK initialization and configuration
-- All account operations (balance checking, trustline verification)
+- All account operations (balance checking, trustline verification)  
 - Payment operations (sending DZT, payment history)
+- CIB payment creation and signature verification
 - Transaction search by memo
 - Error handling patterns
 - Service-based access methods
@@ -77,15 +125,24 @@ This example showcases:
 ### Client Initialization
 
 ```php
-// Default: Mainnet
+// Default: Mainnet with default API endpoint
 $client = new SofizPayClient();
 
 // Explicit network specification
-$client = new SofizPayClient('mainnet');  // or 'testnet'
+$client = new SofizPayClient('mainnet');  
 
 // With custom HTTP client
 $httpClient = new GuzzleHttp\Client(['timeout' => 30]);
 $client = new SofizPayClient('mainnet', $httpClient);
+
+
+
+// Full configuration
+$client = new SofizPayClient(
+    network: 'mainnet',
+    httpClient: $httpClient,
+    baseUrl: 'https://www.sofizpay.com'
+);
 ```
 
 ### Account Operations
@@ -152,6 +209,221 @@ foreach ($payments as $payment) {
 ```php
 $payments = $client->getTransactionsByMemo('GA_ACCOUNT_ID', 'invoice-2024', 20);
 echo "Found " . count($payments) . " transactions with memo 'invoice-2024'\n";
+```
+
+### CIB Payment Operations
+
+#### Create CIB Transaction
+```php
+try {
+    $cibTransaction = $client->createCibTransaction(
+        account: 'GA_YOUR_STELLAR_ACCOUNT',
+        amount: '150.00',                           // Amount in DZT
+        fullName: 'Ahmed Ben Ali',                  // Customer full name
+        phone: '+213555123456',                     // Customer phone number
+        email: 'ahmed@example.com',                 // Customer email
+        returnUrl: 'https://yoursite.com/callback', // Callback URL (optional)
+        memo: 'Order #12345',                       // Optional memo
+        redirect: false                             // Set to true for immediate redirect
+    );
+    
+    echo "Transaction created successfully!\n";
+    echo "Payment URL: " . $cibTransaction->getPaymentUrl() . "\n";
+    echo "Transaction ID: " . $cibTransaction->getTransactionId() . "\n";
+    echo "CIB Transaction ID: " . $cibTransaction->getCibTransactionId() . "\n";
+    
+    // Redirect user to payment page
+    header('Location: ' . $cibTransaction->getPaymentUrl());
+    exit;
+    
+} catch (ValidationException $e) {
+    echo "Validation error: " . $e->getMessage() . "\n";
+} catch (NetworkException $e) {
+    echo "Network error: " . $e->getMessage() . "\n";
+} catch (SofizPayException $e) {
+    echo "SofizPay error: " . $e->getMessage() . "\n";
+}
+```
+
+#### Verify Payment Callback
+```php
+// In your callback endpoint (e.g., callback.php)
+try {
+    // Get the full callback URL
+    $callbackUrl = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+    
+    // Load  public key
+    $PublicKey = '-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1N+bDPxpqeB9QB0affr/
+02aeRXAAnqHuLrgiUlVNdXtF7t+2w8pnEg+m9RRlc+4YEY6UyKTUjVe6k7v2p8Jj
+UItk/fMNOEg/zY222EbqsKZ2mF4hzqgyJ3QHPXjZEEqABkbcYVv4ZyV2Wq0x0ykI
++Hy/5YWKeah4RP2uEML1FlXGpuacnMXpW6n36dne3fUN+OzILGefeRpmpnSGO5+i
+JmpF2mRdKL3hs9WgaLSg6uQyrQuJA9xqcCpUmpNbIGYXN9QZxjdyRGnxivTE8awx
+THV3WRcKrP2krz3ruRGF6yP6PVHEuPc0YDLsYjV5uhfs7JtIksNKhRRAQ16bAsj/
+9wIDAQAB
+-----END PUBLIC KEY-----';
+    
+    // Verify the signature
+    $verification = $client->verifyCibSignature($callbackUrl, $PublicKey);
+    
+    if ($verification->isValid() && $verification->isSuccessful()) {
+        // Payment successful - fulfill the order
+        $transactionId = $verification->getTransactionId();
+        $amount = $verification->getAmount();
+        
+        // Update your database
+        updateOrderStatus($transactionId, 'paid');
+        sendConfirmationEmail($customerEmail);
+        
+        // Redirect to success page
+        header('Location: /success?order=' . $transactionId);
+        
+    } elseif ($verification->isValid() && !$verification->isSuccessful()) {
+        // Payment failed but signature is valid
+        header('Location: /payment-failed');
+        
+    } else {
+        // Invalid signature - security alert!
+        error_log('Invalid CIB signature detected: ' . $verification->getError());
+        header('Location: /error');
+    }
+    
+} catch (Exception $e) {
+    error_log('CIB callback error: ' . $e->getMessage());
+    header('Location: /error');
+}
+```
+
+#### CIB Service Direct Access
+```php
+// Get CIB service for advanced operations
+$cibService = $client->cib();
+
+// Parse return URL parameters
+$params = $cibService->parseReturnUrl($callbackUrl);
+
+// Quick success check (without signature verification)
+$isSuccessful = $cibService->isPaymentSuccessful($callbackUrl);
+
+// Note: Always verify signatures for security!
+```
+        email: 'ahmed@example.com',                 // Customer email
+        returnUrl: 'https://yoursite.com/callback', // Your callback URL
+        memo: 'Order #12345',                       // Optional memo
+        redirect: false                             // Set true to redirect immediately
+    );
+
+    echo "Transaction ID: " . $cibTransaction->getTransactionId() . "\n";
+    echo "CIB Transaction ID: " . $cibTransaction->getCibTransactionId() . "\n";
+    echo "Payment URL: " . $cibTransaction->getPaymentUrl() . "\n";
+    echo "Amount: " . $cibTransaction->getAmount() . " DZT\n";
+    
+    // Redirect user to payment URL
+    header('Location: ' . $cibTransaction->getPaymentUrl());
+    exit;
+    
+} catch (ValidationException $e) {
+    echo "Invalid parameters: " . $e->getMessage() . "\n";
+} catch (NetworkException $e) {
+    echo "Network error: " . $e->getMessage() . "\n";
+} catch (SofizPayException $e) {
+    echo "SofizPay error: " . $e->getMessage() . "\n";
+}
+```
+
+#### Verify Payment Callback Signature
+```php
+// In your callback endpoint (e.g., callback.php)
+$fullUrl = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+$publicKeyPem = file_get_contents('path/to/your/public_key.pem');
+
+try {
+    $verification = $client->verifyCibSignature($fullUrl, $publicKeyPem);
+    
+    if ($verification->isValid() && $verification->isSuccessful()) {
+        // Payment successful and signature valid
+        echo "Payment verified successfully!\n";
+        echo "Transaction ID: " . $verification->getTransactionId() . "\n";
+        echo "CIB Transaction ID: " . $verification->getCibTransactionId() . "\n";
+        echo "Amount: " . $verification->getAmount() . "\n";
+        
+        // Process the successful payment
+        updateOrderStatus($verification->getTransactionId(), 'paid');
+        sendConfirmationEmail($customerEmail);
+        
+    } elseif ($verification->isValid() && !$verification->isSuccessful()) {
+        // Payment failed but signature is valid
+        echo "Payment failed: " . $verification->getPaymentStatus() . "\n";
+        updateOrderStatus($verification->getTransactionId(), 'payment_failed');
+        
+    } else {
+        // Invalid signature - possible tampering
+        echo "Invalid signature! Possible security issue.\n";
+        if ($verification->getError()) {
+            echo "Error: " . $verification->getError() . "\n";
+        }
+        logSecurityIncident($fullUrl);
+    }
+    
+} catch (ValidationException $e) {
+    echo "Invalid callback URL: " . $e->getMessage() . "\n";
+} catch (SofizPayException $e) {
+    echo "Verification error: " . $e->getMessage() . "\n";
+}
+```
+
+#### CIB Service Utilities
+```php
+$cibService = $client->cib();
+
+// Parse callback URL parameters
+$params = $cibService->parseReturnUrl($callbackUrl);
+foreach ($params as $key => $value) {
+    echo "{$key}: {$value}\n";
+}
+
+// Quick success check (without signature verification)
+$isSuccessful = $cibService->isPaymentSuccessful($callbackUrl);
+echo "Payment successful: " . ($isSuccessful ? 'Yes' : 'No') . "\n";
+```
+
+#### Complete CIB Integration Workflow
+
+1. **Setup**: Install dependencies
+2. **Payment Creation**: Create CIB transaction with customer details
+3. **User Redirect**: Redirect user to CIB payment page
+4. **Payment Processing**: User completes payment on CIB platform
+5. **Callback Handling**: Receive and verify signed callback from CIB
+6. **Order Fulfillment**: Process successful payments, handle failures
+
+```php
+// Example callback handler (callback.php)
+<?php
+require_once 'vendor/autoload.php';
+
+use Sofiz\SofizPay\SofizPayClient;
+
+$client = new SofizPayClient();
+$publicKey = file_get_contents('public_key.pem');
+$fullUrl = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+
+try {
+    $verification = $client->verifyCibSignature($fullUrl, $publicKey);
+    
+    if ($verification->isValid() && $verification->isSuccessful()) {
+        // Success: fulfill order
+        $orderId = extractOrderIdFromUrl($fullUrl);
+        updateOrderStatus($orderId, 'paid');
+        header('Location: /success?order=' . $orderId);
+    } else {
+        // Failure or invalid signature
+        header('Location: /payment-failed');
+    }
+} catch (Exception $e) {
+    error_log('CIB callback error: ' . $e->getMessage());
+    header('Location: /error');
+}
+?>
 ```
 
 ### Service-Based Access
@@ -557,13 +829,24 @@ Represents the DZT asset configuration.
 
 ## Examples
 
-See the `examples/` directory for complete usage examples:
+See the example files for complete usage demonstrations:
 
-- `basic_usage.php` - SDK initialization and basic operations
-- `send_payment.php` - Sending DZT payments
-- `get_balance.php` - Checking account balances
-- `get_payment_history.php` - Retrieving payment history
-- `get_transactions_by_memo.php` - Finding transactions by memo
+- `example.php` - Complete SDK demonstration with wallet features
+- `cib_example.php` - Comprehensive CIB payment integration guide
+- `test_real_callback.php` - CIB callback verification example
+
+### Running Examples
+
+```bash
+# Run the complete SDK example
+php example.php
+
+# Run the CIB integration example
+php cib_example.php
+
+# Run the CIB callback verification example
+php test_real_callback.php
+```
 
 ## Features
 
@@ -571,7 +854,14 @@ See the `examples/` directory for complete usage examples:
 - Support for both testnet and mainnet
 - Comprehensive DZT asset handling
 - Payment sending with memo support
+- **CIB Payment Integration** with signature verification
 - Payment history retrieval with pagination
+- Transaction search by memo
+- Account balance checking
+- Comprehensive error handling
+- PSR-12 compliant code
+- Full test coverage
+- Static analysis with PHPStan
 - Transaction search by memo
 - Account balance checking
 - Comprehensive error handling

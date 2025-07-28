@@ -10,6 +10,7 @@ use GuzzleHttp\Client as HttpClient;
 use Sofiz\SofizPay\Models\DztAsset;
 use Sofiz\SofizPay\Services\PaymentService;
 use Sofiz\SofizPay\Services\AccountService;
+use Sofiz\SofizPay\Services\CibService;
 
 /**
  * Main SofizPay SDK Client
@@ -23,13 +24,15 @@ class SofizPayClient
     private DztAsset $dztAsset;
     private PaymentService $paymentService;
     private AccountService $accountService;
+    private CibService $cibService;
 
     // Fixed DZT asset issuer
     private const DZT_ISSUER_ACCOUNT_ID = 'GCAZI7YBLIDJWIVEL7ETNAZGPP3LC24NO6KAOBWZHUERXQ7M5BC52DLV';
 
     public function __construct(
         string $network = 'mainnet',
-        ?HttpClient $httpClient = null
+        ?HttpClient $httpClient = null,
+        string $baseUrl = 'https://api.sofizpay.com'
     ) {
         $this->network = $network;
         $this->httpClient = $httpClient ?? new HttpClient();
@@ -43,6 +46,7 @@ class SofizPayClient
         // Initialize services
         $this->paymentService = new PaymentService($this, $this->dztAsset);
         $this->accountService = new AccountService($this, $this->dztAsset);
+        $this->cibService = new CibService($this, $baseUrl);
     }
 
     private function initializeStellarSdk(): void
@@ -112,6 +116,14 @@ class SofizPayClient
         return $this->accountService;
     }
 
+    /**
+     * Get the CIB service
+     */
+    public function cib(): CibService
+    {
+        return $this->cibService;
+    }
+
     // Convenience methods for direct access to main functionality
 
     /**
@@ -155,5 +167,38 @@ class SofizPayClient
     public function getDztBalance(string $accountId): ?\Sofiz\SofizPay\Models\Balance
     {
         return $this->accountService->getDztBalance($accountId);
+    }
+
+    /**
+     * Create a CIB transaction
+     */
+    public function createCibTransaction(
+        string $account,
+        string $amount,
+        string $fullName,
+        string $phone,
+        string $email,
+        ?string $returnUrl = null,
+        ?string $memo = null,
+        bool $redirect = false
+    ): \Sofiz\SofizPay\Models\CibTransaction {
+        return $this->cibService->createTransaction(
+            $account,
+            $amount,
+            $fullName,
+            $phone,
+            $email,
+            $returnUrl,
+            $memo,
+            $redirect
+        );
+    }
+
+    /**
+     * Verify CIB transaction signature
+     */
+    public function verifyCibSignature(string $returnUrl, string $publicKeyPem): \Sofiz\SofizPay\Models\SignatureVerification
+    {
+        return $this->cibService->verifySignature($returnUrl, $publicKeyPem);
     }
 }
