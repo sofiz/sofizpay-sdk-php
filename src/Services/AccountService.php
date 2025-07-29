@@ -26,9 +26,9 @@ class AccountService
     }
 
     /**
-     * Get DZT balance for an account
+     * Get balance for an account
      */
-    public function getDztBalance(string $accountId): ?Balance
+    public function getDzdBalance(string $accountId): ?Balance
     {
         try {
             $stellarSdk = $this->client->getStellarSdk();
@@ -110,12 +110,12 @@ class AccountService
     }
 
     /**
-     * Check if account has trustline for DZT asset
+     * Check if account has trustline 
      */
     public function hasDztTrustline(string $accountId): bool
     {
         try {
-            $balance = $this->getDztBalance($accountId);
+            $balance = $this->getDzdBalance($accountId);
             return $balance !== null;
         } catch (Exception $e) {
             return false;

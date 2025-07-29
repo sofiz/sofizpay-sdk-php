@@ -9,19 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Initial release of SofizPay PHP SDK
-- DZT token payment operations on Stellar network
 - Account balance checking and trustline verification
 - Payment history retrieval with pagination
 - Transaction search by memo
 - Comprehensive error handling with custom exceptions
 - Service-based architecture (AccountService, PaymentService)
-- Support for mainnet and testnet networks
-- Fixed DZT asset configuration with official issuer
 - Complete documentation and usage examples
 
 ### Features
-- Send DZT payments with optional memos
-- Check account DZT balances and authorization status
+- Send DZD payments with optional memos
+- Check account DZD balances and authorization status
 - Retrieve all asset balances for accounts
 - Verify account existence on Stellar network
 - Search transactions by memo text

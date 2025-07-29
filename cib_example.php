@@ -28,7 +28,7 @@ use Sofiz\SofizPay\Exceptions\ValidationException;
 
 // Initialize SofizPay client
 $client = new SofizPayClient(
-    network: 'mainnet', // or 'testnet'
+    network: 'mainnet',
     httpClient: null,
     baseUrl: 'https://www.sofizpay.com' // Real SofizPay API endpoint
 );
@@ -53,7 +53,7 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 try {
     $cibTransaction = $client->createCibTransaction(
         account: $stellarAccount,
-        amount: '150.00', // Amount in DZT
+        amount: '150.00', // Amount in DZD
         fullName: 'Mohammed Benali',
         phone: '+213555123456',
         email: 'mohammed@example.com',
@@ -66,7 +66,7 @@ try {
     echo "📋 Transaction Details:\n";
     echo "   Transaction ID: " . $cibTransaction->getTransactionId() . "\n";
     echo "   CIB Transaction ID: " . $cibTransaction->getCibTransactionId() . "\n";
-    echo "   Amount: " . $cibTransaction->getAmount() . " DZT\n";
+    echo "   Amount: " . $cibTransaction->getAmount() . " DZD\n";
     echo "   Status: " . $cibTransaction->getStatus() . "\n";
     echo "   Payment URL: " . $cibTransaction->getPaymentUrl() . "\n";
     echo "   More Info URL: " . $cibTransaction->getMoreInfoUrl() . "\n\n";

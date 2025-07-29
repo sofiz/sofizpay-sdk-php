@@ -162,11 +162,11 @@ class SofizPayClient
     }
 
     /**
-     * Get DZT balance for an account
+     * Get DZD balance for an account
      */
-    public function getDztBalance(string $accountId): ?\Sofiz\SofizPay\Models\Balance
+    public function getDzdBalance(string $accountId): ?\Sofiz\SofizPay\Models\Balance
     {
-        return $this->accountService->getDztBalance($accountId);
+        return $this->accountService->getDzdBalance($accountId);
     }
 
     /**

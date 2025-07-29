@@ -17,7 +17,7 @@ use Soneso\StellarSDK\Memo;
 use Exception;
 
 /**
- * Service for handling DZT payments
+ * Service for handling payments
  */
 class PaymentService
 {

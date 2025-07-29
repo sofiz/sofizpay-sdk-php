@@ -1,7 +1,7 @@
 {
     "name": "sofiz/sofizpay-sdk-php",
-    "description": "PHP SDK for SofizPay - DZT token operations on Stellar network",
-    "keywords": ["sofizpay", "dzt", "stellar", "blockchain", "cryptocurrency", "sdk", "php"],
+    "description": "PHP SDK for SofizPay - DZD operations",
+    "keywords": ["sofizpay", "dzd", "sdk", "php"],
     "homepage": "https://github.com/sofiz/sofizpay-sdk-php",
     "type": "library",
     "license": "MIT",

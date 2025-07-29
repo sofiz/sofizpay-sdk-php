@@ -3,7 +3,7 @@
  * SofizPay PHP SDK - Complete Usage Example
  * 
  * This example demonstrates all the functionality available in the SofizPay SDK
- * for interacting with DZT (Dzuut) tokens on the Stellar network.
+ * for interacting with DZT tokens on the Stellar network.
  * 
  * Features demonstrated:
  * - SDK initialization and configuration
@@ -37,8 +37,8 @@ echo "║                     Complete Usage Example                    ║\n";
 echo "╚════════════════════════════════════════════════════════════════╝\n\n";
 
 // Initialize SofizPay client
-// Network options: 'mainnet' (default) or 'testnet'
-$network = 'mainnet'; // Change to 'testnet' for testing
+// Network options: 'mainnet' (default) 
+$network = 'mainnet'; 
 $baseUrl = 'https://www.sofizpay.com'; // Change to your API base URL if different
 $client = new SofizPayClient($network, null, $baseUrl);
 
@@ -106,7 +106,7 @@ try {
 echo "\n1.3 Getting DZT balance...\n";
 try {
     if ($usingRealCredentials) {
-        $dztBalance = $client->getDztBalance($exampleAccountToCheck);
+        $dztBalance = $client->getDzdBalance($exampleAccountToCheck);
         if ($dztBalance) {
             echo "✓ DZT Balance: " . $dztBalance->getBalance() . " DZT\n";
             echo "  - Asset Code: " . $dztBalance->getAssetCode() . "\n";
@@ -247,7 +247,7 @@ echo "  - \$client->payments()->getPaymentHistory(...)\n";
 echo "  - \$client->payments()->getTransactionsByMemo(...)\n\n";
 
 echo "3.2 Account Service Methods:\n";
-echo "  - \$client->accounts()->getDztBalance(...)\n";
+echo "  - \$client->accounts()->getDzdBalance(...)\n";
 echo "  - \$client->accounts()->getAllBalances(...)\n";
 echo "  - \$client->accounts()->accountExists(...)\n";
 echo "  - \$client->accounts()->hasDztTrustline(...)\n\n";
@@ -280,7 +280,7 @@ try {
         echo "   [DEMO] Would test with non-existent account\n";
         echo "   [DEMO] NetworkException: Account not found\n";
     } else {
-        $client->getDztBalance('GA_NON_EXISTENT_ACCOUNT_ID_THAT_DOES_NOT_EXIST_ON_NETWORK');
+        $client->getDzdBalance('GA_NON_EXISTENT_ACCOUNT_ID_THAT_DOES_NOT_EXIST_ON_NETWORK');
     }
 } catch (NetworkException $e) {
     echo "✓ Caught NetworkException: " . $e->getMessage() . "\n";
@@ -301,7 +301,6 @@ echo "✅ Get payment history with pagination support\n";
 echo "✅ Search transactions by memo text\n";
 echo "✅ Account existence verification\n";
 echo "✅ Fixed DZT asset configuration (mainnet issuer)\n";
-echo "✅ Support for both mainnet and testnet\n";
 echo "✅ Comprehensive error handling with custom exceptions\n";
 echo "✅ Service-based architecture for modular access\n";
 echo "✅ Built on reliable Soneso Stellar SDK\n\n";
