@@ -1,6 +1,6 @@
 # SofizPay PHP SDK
 
-A comprehensive PHP SDK for SofizPay's DZD token operations on the Stellar blockchain. This SDK provides seamless integration for DZD token operations, built on a reliable foundation with a simple yet powerful interface for managing DZD transactions, account balances, and payment history.
+A comprehensive PHP SDK for SofizPay's DZD token operations. This SDK provides seamless integration for DZD token operations, built on a reliable foundation with a simple yet powerful interface for managing DZD transactions, account balances, and payment history.
 
 ## 🚀 Features
 
@@ -291,7 +291,7 @@ The SDK provides comprehensive error handling with custom exceptions:
 ### Exception Types
 
 - **`ValidationException`**: Invalid input parameters
-- **`NetworkException`**: blockchain network errors
+- **`NetworkException`**:  network errors
 - **`SofizPayException`**: Base exception class
 
 ### Error Handling Pattern
@@ -307,7 +307,7 @@ try {
     // Handle validation errors (invalid keys, amounts, etc.)
     echo "Validation Error: " . $e->getMessage();
 } catch (NetworkException $e) {
-    // Handle network/blockchain errors (account not found, insufficient funds, etc.)
+    // Handle network errors (account not found, insufficient funds, etc.)
     echo "Network Error: " . $e->getMessage();
 } catch (SofizPayException $e) {
     // Handle other SDK errors
@@ -330,18 +330,11 @@ php example.php
 
 ### Live Testing
 
-To test with real blockchain accounts:
+To test with real accounts:
 
 1. Replace placeholder credentials in `example.php`
-2. Ensure accounts have DZD trustlines established
-3. Have sufficient XLM for transaction fees
-4. Run the example again
+2. Ensure accounts is an active sofizpay account with DZD 
 
-### Prerequisites for Live Testing
-
-- Valid blockchain account with secret key
-- DZD trustline established on the account
-- Sufficient XLM balance for transaction fees (≥0.00001 XLM per transaction)
 
 ## 🏗️ Architecture
 
@@ -371,22 +364,17 @@ sofizpay-sdk-php/
 
 - **Service-Oriented**: Modular services for different operations  
 - **Exception Safety**: Comprehensive error handling
-- **blockchain Integration**: Built on proven Soneso blockchain SDK
 - **Type Safety**: Full PHP type declarations
 - **Documentation**: Extensive inline documentation
 
 ## 🤝 Contributing
 
-This SDK is developed for SofizPay's DZD token operations. For issues or feature requests, please contact the SofizPay development team.
+This SDK is developed for SofizPay. For issues or feature requests, please contact the SofizPay development team.
 
 ## 📄 License
 
 This project is proprietary software developed for SofizPay.
 
-## 🔗 Dependencies
-
-- **[soneso/blockchain-php-sdk](https://github.com/Soneso/blockchain-php-sdk)**: blockchain network integration
-- **[guzzlehttp/guzzle](https://github.com/guzzle/guzzle)**: HTTP client library
 
 ## 📞 Support
 
@@ -394,7 +382,7 @@ For technical support or questions:
 
 - Review the comprehensive `example.php` for usage patterns
 - Check error messages and exception types for troubleshooting
-- Ensure proper blockchain account setup and DZD trustlines
+
 
 ---
 
