@@ -1,24 +1,5 @@
-# Dependencies
-/vendor/
-
-# Testing & Analysis
-/coverage/
-/.phpunit.result.cache
-/phpunit.xml
-/.php-cs-fixer.cache
-/.phpstan/
-
-# IDE
-/.idea/
-/.vscode/
-
-# Logs & Cache
+vendor/
+.idea/
+.vscode/
 *.log
-*.cache
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Development files (keep composer.lock for development)
-# /composer.lock
+.env
