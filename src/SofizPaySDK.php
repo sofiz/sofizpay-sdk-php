@@ -345,7 +345,7 @@ class SofizPaySDK {
     }
 
     public function getOperationDetails(string $operationId, string $encSk): array {
-        return $this->_get("https://www.sofizpay.com/operation-details/{$operationId}/", ['encrypted_sk' => $encSk]);
+        return $this->_get("https://sofizpay.com/services/operation-detail/{$operationId}/", ['encrypted_sk' => $encSk]);
     }
 
     /**
