@@ -18,11 +18,13 @@ use Soneso\StellarSDK\Responses\Operations\ChangeTrustOperationResponse;
 
 class SofizPaySDK {
     private StellarSDK $sdk;
+    private bool $isSandbox;
     public const DZT_ASSET_CODE = 'DZT';
     public const DZT_ASSET_ISSUER = 'GCAZI7YBLIDJWIVEL7ETNAZGPP3LC24NO6KAOBWZHUERXQ7M5BC52DLV';
 
-    public function __construct(string $horizonUrl = 'https://horizon.stellar.org') {
+    public function __construct(string $horizonUrl = 'https://horizon.stellar.org', bool $isSandbox = false) {
         $this->sdk = new StellarSDK($horizonUrl);
+        $this->isSandbox = $isSandbox;
     }
 
     /**
@@ -312,7 +314,20 @@ class SofizPaySDK {
      * Web API Services
      */
     public function makeCIBTransaction(array $params): array {
-        $baseUrl = 'https://www.sofizpay.com/make-cib-transaction/';
+        return $this->_makeCIBRequest($params, false);
+    }
+
+    /**
+     * Initiate a CIB transaction specifically in Sandbox mode.
+     */
+    public function makeSandboxCIBTransaction(array $params): array {
+        return $this->_makeCIBRequest($params, true);
+    }
+
+    private function _makeCIBRequest(array $params, bool $useSandbox): array {
+        $baseUrl = $useSandbox
+            ? 'https://sofizpay.com/sandbox/make-cib-transaction/'
+            : 'https://www.sofizpay.com/make-cib-transaction/';
         $queryParams = [
             'account' => $params['account'] ?? '',
             'amount' => $params['amount'] ?? 0,
@@ -332,8 +347,22 @@ class SofizPaySDK {
         return $this->_get('https://sofizpay.com/services/get_products/', [], ['encrypted_sk' => $encSk]);
     }
 
-    public function checkCIBStatus(string $orderNumber): array {
-        return $this->_get('https://www.sofizpay.com/cib-transaction-check/', ['order_number' => $orderNumber]);
+    public function checkCIBStatus(string $cibTransactionId): array {
+        return $this->_checkCIBStatusRequest($cibTransactionId, false);
+    }
+
+    /**
+     * Check status of a CIB transaction specifically in Sandbox mode.
+     */
+    public function checkSandboxCIBStatus(string $cibTransactionId): array {
+        return $this->_checkCIBStatusRequest($cibTransactionId, true);
+    }
+
+    private function _checkCIBStatusRequest(string $cibTransactionId, bool $useSandbox): array {
+        $baseUrl = $useSandbox
+            ? 'https://sofizpay.com/sandbox/cib-transaction-check/'
+            : 'https://www.sofizpay.com/cib-transaction-check/';
+        return $this->_get($baseUrl, ['order_number' => $cibTransactionId]);
     }
 
     public function getOperationHistory(string $encSk, int $limit = 10, int $offset = 0): array {

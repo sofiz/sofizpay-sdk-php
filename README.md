@@ -278,11 +278,37 @@ if ($result['success']) {
 }
 ```
 
-### Check CIB Status
+### 🧪 Sandbox Environment
+
+For safe testing without real money, use the dedicated sandbox methods. These methods always point to the SofizPay Sandbox environment.
+
+```php
+// 1. Generate a sandbox payment link
+$result = $sdk->makeSandboxCIBTransaction([
+    'account'   => 'YOUR_PUBLIC_KEY',
+    'amount'    => 150.0,
+    'full_name' => 'Sandbox Tester',
+    'phone'     => '0555000000',
+    'email'     => 'sandbox@example.com'
+]);
+
+if ($result['success']) {
+    echo "Sandbox URL: " . $result['data']['payment_url'] . "\n";
+    $cibId = $result['data']['cib_transaction_id'];
+
+    // 2. Check sandbox status
+    $status = $sdk->checkSandboxCIBStatus($cibId);
+    echo "Sandbox Status: " . $status['data']['status'] . "\n";
+}
+```
+
+### Check CIB Status (Production)
+
+To monitor the progress of a real CIB/Dahabia payment, use the `cib_transaction_id` returned in the `data` of the `makeCIBTransaction` response.
 
 ```php
 // Check the status of a specific CIB transaction using its ID
-$status = $sdk.checkCIBStatus('CIB_TRANSACTION_ID');
+$status = $sdk->checkCIBStatus('CIB_TRANSACTION_ID');
 if ($status['success']) {
     // Current status (e.g., 'success', 'pending', 'failed')
     echo "Status: " . $status['data']['status'];
